@@ -110,6 +110,11 @@ public class UserController {
         return ResultUtils.success(isOK);
     }
 
+    @GetMapping("/searchTags")
+    public List<User> searchUsersByTags(List<String> tagNameList){
+        return userService.searchUsersByTags(tagNameList);
+    }
+
     private boolean isAdmin(HttpServletRequest request) {
         User user = (User) request.getSession().getAttribute(UserConstant.USER_LOGIN_STATE);
         if (user == null || user.getUserRole() != UserConstant.ROLE_ADMIN) {
@@ -117,4 +122,7 @@ public class UserController {
         }
         return true;
     }
+
+
+
 }

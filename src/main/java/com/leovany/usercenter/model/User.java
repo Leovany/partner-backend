@@ -4,13 +4,15 @@ import com.baomidou.mybatisplus.annotation.*;
 
 import java.io.Serializable;
 import java.util.Date;
+
 import lombok.Data;
 
 /**
  * 用户表
+ *
  * @TableName user
  */
-@TableName(value ="user")
+@TableName(value = "user")
 @Data
 public class User implements Serializable {
     /**
@@ -70,6 +72,11 @@ public class User implements Serializable {
     private String planetCode;
 
     /**
+     * 标签列表-json
+     */
+    private String tags;
+
+    /**
      * 创建时间
      */
     private Date createTime;
@@ -78,6 +85,7 @@ public class User implements Serializable {
      * 更新时间
      */
     private Date updateTime;
+
 
     /**
      * 是否删除

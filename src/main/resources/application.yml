@@ -8,7 +8,7 @@ spring:
     name: partner
 
   datasource:
-    url: "jdbc:mysql://localhost:3306/partner?characterEncoding=utf-8&serverTimezone=UTC&useSSL=false"
+    url: "jdbc:mysql://localhost:3307/partner?characterEncoding=utf-8&serverTimezone=UTC&useSSL=false"
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: 123456

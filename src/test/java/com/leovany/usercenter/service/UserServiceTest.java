@@ -1,7 +1,11 @@
 package com.leovany.usercenter.service;
+
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 import com.leovany.usercenter.model.User;
+import org.junit.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +20,7 @@ class UserServiceTest {
     private UserService userService;
 
     @Test
-    public void test(){
+    public void test() {
         System.out.println("==");
         User user = new User();
 
@@ -31,5 +35,13 @@ class UserServiceTest {
         System.out.println(user.getId());
         System.out.println(result);
         Assertions.assertTrue(result);
+    }
+
+    @Test
+    void searchUsersByTags() {
+        List<String> tagNameList = Arrays.asList("java", "python");
+        List<User> userList = userService.searchUsersByTags(tagNameList);
+        Assert.assertNotEquals(userList.size(), 0);
+
     }
 }

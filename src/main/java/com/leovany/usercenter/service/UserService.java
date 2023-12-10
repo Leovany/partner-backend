@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.leovany.usercenter.model.request.UserRegisterRequest;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * @author leovany
@@ -26,4 +27,6 @@ public interface UserService extends IService<User> {
     User getSafeUser(User user);
 
     void userLogout(HttpServletRequest request);
+
+    List<User> searchUsersByTags(List<String> tagNameList);
 }
