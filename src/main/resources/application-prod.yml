@@ -1,0 +1,12 @@
+# 生产环境配置
+
+server:
+  port: 8080
+
+spring:
+
+  datasource:
+    url: "jdbc:mysql://111.230.34.7:3306/partner?characterEncoding=utf-8&serverTimezone=UTC&useSSL=false"
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 123456
