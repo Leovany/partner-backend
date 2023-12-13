@@ -21,6 +21,7 @@ public interface UserService extends IService<User> {
 
     /**
      * 用户数据脱敏
+     *
      * @param user
      * @return
      */
@@ -28,5 +29,11 @@ public interface UserService extends IService<User> {
 
     void userLogout(HttpServletRequest request);
 
+    /**
+     * 根据标签搜索用户
+     *
+     * @param tagNameList
+     * @return
+     */
     List<User> searchUsersByTags(List<String> tagNameList);
 }
