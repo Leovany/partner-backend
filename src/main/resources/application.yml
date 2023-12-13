@@ -16,6 +16,10 @@ spring:
   session:
     timeout: 86400  # session失效时间，单位秒，1天
 
+  mvc:
+    pathmatch:
+      matching-strategy: ANT_PATH_MATCHER  # 配置路径匹配策略-- 接口文档(Swagger or Knife4j)
+
 mybatis-plus:
   global-config:
     db-config:
