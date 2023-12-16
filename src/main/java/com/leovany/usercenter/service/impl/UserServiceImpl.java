@@ -2,6 +2,8 @@ package com.leovany.usercenter.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.leovany.usercenter.common.ErrorCode;
 import com.leovany.usercenter.constant.UserConstant;
 import com.leovany.usercenter.exception.BusinessException;
@@ -16,9 +18,13 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.util.DigestUtils;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * @author leovany
@@ -156,13 +162,34 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         if (CollectionUtils.isEmpty(tagNameList)) {
             throw new BusinessException(ErrorCode.ERROR_PARAMS);
         }
+        // 1. 先查询所有用户
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
-        tagNameList.forEach(tagName -> {
-            queryWrapper.like(User::getTags, tagName);
-        });
-        List<User> userList = list(queryWrapper);
+        List<User> userList = baseMapper.selectList(queryWrapper);
+        Gson gson = new Gson();
+        // 2. 在内存中判断是否包含要求的标签
+        List<User> newUserList = userList.stream().filter(user -> {
+            String tagsStr = user.getTags();
+            Set<String> tempTagNameSet = gson.fromJson(tagsStr, new TypeToken<Set<String>>() {
+            }.getType());
+            tempTagNameSet = Optional.ofNullable(tempTagNameSet).orElse(new HashSet<>());
+            for (String tagName : tagNameList) {
+                if (!tempTagNameSet.contains(tagName)) {
+                    return false;
+                }
+            }
+            return true;
+        }).map(this::getSafeUser).collect(Collectors.toList());
 
-        return userList;
+//        if (CollectionUtils.isEmpty(tagNameList)) {
+//            throw new BusinessException(ErrorCode.ERROR_PARAMS);
+//        }
+//        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+//        tagNameList.forEach(tagName -> {
+//            queryWrapper.like(User::getTags, tagName);
+//        });
+//        List<User> userList = list(queryWrapper);
+
+        return newUserList;
     }
 }
 

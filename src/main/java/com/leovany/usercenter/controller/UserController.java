@@ -12,6 +12,7 @@ import com.leovany.usercenter.model.request.UserRegisterRequest;
 import com.leovany.usercenter.service.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,6 +22,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/user")
+@CrossOrigin
 public class UserController {
 
     @Autowired
@@ -37,7 +39,7 @@ public class UserController {
         String checkPassword = userRegisterRequest.getCheckPassword();
         String planetCode = userRegisterRequest.getPlanetCode();
         if (StringUtils.isAnyBlank(userAccount, userPassword, checkPassword, planetCode)) {
-            throw new BusinessException(ErrorCode.ERROR_PARAMS,"参数为空");
+            throw new BusinessException(ErrorCode.ERROR_PARAMS, "参数为空");
         }
 
         long userId = userService.userRegister(userRegisterRequest);
@@ -86,7 +88,7 @@ public class UserController {
     public ResultVO<List<User>> searchUsers(String username, HttpServletRequest request) {
         // 鉴权
         if (!isAdmin(request)) {
-            throw new BusinessException(ErrorCode.ERROR_NO_AUTH,"缺少管理员权限");
+            throw new BusinessException(ErrorCode.ERROR_NO_AUTH, "缺少管理员权限");
         }
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
         if (StringUtils.isNotBlank(username)) {
@@ -110,9 +112,13 @@ public class UserController {
         return ResultUtils.success(isOK);
     }
 
-    @GetMapping("/searchTags")
-    public List<User> searchUsersByTags(List<String> tagNameList){
-        return userService.searchUsersByTags(tagNameList);
+    @GetMapping("/search/tags")
+    public ResultVO<List<User>> searchUsersByTags(@RequestParam List<String> tagNameList) {
+        if (CollectionUtils.isEmpty(tagNameList)) {
+            throw new BusinessException(ErrorCode.ERROR_PARAMS);
+        }
+        List<User> userList = userService.searchUsersByTags(tagNameList);
+        return ResultUtils.success(userList);
     }
 
     private boolean isAdmin(HttpServletRequest request) {
@@ -122,7 +128,6 @@ public class UserController {
         }
         return true;
     }
-
 
 
 }
