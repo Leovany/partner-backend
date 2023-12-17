@@ -22,7 +22,6 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/user")
-@CrossOrigin
 public class UserController {
 
     @Autowired
@@ -87,7 +86,7 @@ public class UserController {
     @GetMapping("/search")
     public ResultVO<List<User>> searchUsers(String username, HttpServletRequest request) {
         // 鉴权
-        if (!isAdmin(request)) {
+        if (!userService.isAdmin(request)) {
             throw new BusinessException(ErrorCode.ERROR_NO_AUTH, "缺少管理员权限");
         }
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
@@ -102,7 +101,7 @@ public class UserController {
     @PostMapping("/delete")
     public ResultVO<Boolean> deleteUser(@RequestBody long id, HttpServletRequest request) {
         // 鉴权
-        if (!isAdmin(request)) {
+        if (!userService.isAdmin(request)) {
             throw new BusinessException(ErrorCode.ERROR_NO_AUTH);
         }
         if (id <= 0) {
@@ -110,6 +109,17 @@ public class UserController {
         }
         boolean isOK = userService.removeById(id);
         return ResultUtils.success(isOK);
+    }
+
+    @PostMapping("/update")
+    public ResultVO<Integer> updateUser(@RequestBody User user, HttpServletRequest request) {
+        // 校验参数是否为空
+        if (user == null) {
+            throw new BusinessException(ErrorCode.ERROR_PARAMS);
+        }
+        User loginUser = userService.getLoginUser(request);
+        int result = userService.updateUser(user, loginUser);
+        return ResultUtils.success(result);
     }
 
     @GetMapping("/search/tags")
@@ -121,13 +131,7 @@ public class UserController {
         return ResultUtils.success(userList);
     }
 
-    private boolean isAdmin(HttpServletRequest request) {
-        User user = (User) request.getSession().getAttribute(UserConstant.USER_LOGIN_STATE);
-        if (user == null || user.getUserRole() != UserConstant.ROLE_ADMIN) {
-            return false;
-        }
-        return true;
-    }
+
 
 
 }
